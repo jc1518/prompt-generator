@@ -15,7 +15,6 @@ import { Construct } from "constructs";
 
 interface AppSyncResourcesProps {
   promptsTable: TableV2;
-  promptGeneratorLambda: IFunction;
   userPool: IUserPool;
   authenticatedRole: IRole;
 }
@@ -54,7 +53,6 @@ export class AppSyncResources extends Construct {
       xrayEnabled: true,
     });
 
-    this.graphQlApi.grantMutation(props.promptGeneratorLambda);
     this.graphQlApi.grantSubscription(props.authenticatedRole);
     this.graphQlApi.grantQuery(props.authenticatedRole);
 

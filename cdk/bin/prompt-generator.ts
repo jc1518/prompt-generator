@@ -5,7 +5,7 @@ import { PromptGeneratorStack } from "../lib/prompt-generator-stack";
 
 const props = {
   logLevel: process.env.LOG_LEVEL || "",
-  allowedDomain: process.env.ALLOWED_DOMAIN || "",
+  allowedDomain: process.env.ALLOWED_DOMAIN || "amazon.com",
   anthropicModel:
     process.env.ANTHROPIC_MODEL || "anthropic.claude-3-5-sonnet-20240620-v1:0",
   bedrockRegion: process.env.BEDROCK_REGION || "us-west-2",

@@ -1,10 +1,10 @@
 import { App, Stack, StackProps, CfnOutput } from "aws-cdk-lib";
+import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 import { config } from "dotenv";
 import {
   Site,
   ApiResources,
-  LambdaResources,
   Cognito,
   DynamoDBResources,
   AppSyncResources,
@@ -30,58 +30,56 @@ export class PromptGeneratorStack extends Stack {
 
     const dynamoDbResources = new DynamoDBResources(this, "DynamoDBResources");
 
-    const lambdaResources = new LambdaResources(this, "LambdaResources", {
-      anthropicModel: props.anthropicModel,
-    });
-
-    const appSyncResources = new AppSyncResources(this, "AppSyncResources", {
-      promptsTable: dynamoDbResources.promptsTable,
-      promptGeneratorLambda: lambdaResources.promptGeneratorLambda,
-      authenticatedRole: cognitoResources.authenticatedRole,
-      userPool: cognitoResources.userPool,
-    });
-
-    lambdaResources.promptGeneratorLambda.addEnvironment(
-      "APPSYNC_ENDPOINT",
-      appSyncResources.graphQlApi.graphqlUrl
-    );
-
-    lambdaResources.promptGeneratorLambda.addEnvironment(
-      "APPSYNC_API_KEY",
-      appSyncResources.graphQlApi.apiKey!
-    );
-
-    lambdaResources.promptGeneratorLambda.addEnvironment(
-      "ANTHROPIC_MODEL",
-      props.anthropicModel
-    );
-
-    lambdaResources.promptGeneratorLambda.addEnvironment(
-      "BEDROC_REGION",
-      props.bedrockRegion
-    );
-
     const stateMachineNameResources = new StateMachineResources(
       this,
       "StateMachineResources",
       {
-        promptGeneratorLambda: lambdaResources.promptGeneratorLambda,
+        anthropicModel: props.anthropicModel,
       }
     );
 
-    stateMachineNameResources.promptGenerationStateMachine.grantExecution(
-      lambdaResources.requestHandlerLambda
+    const appSyncResources = new AppSyncResources(this, "AppSyncResources", {
+      promptsTable: dynamoDbResources.promptsTable,
+      authenticatedRole: cognitoResources.authenticatedRole,
+      userPool: cognitoResources.userPool,
+    });
+
+    appSyncResources.graphQlApi.grantMutation(
+      stateMachineNameResources.promptGeneratorLambda
     );
 
-    lambdaResources.promptGeneratorLambda.addEnvironment(
-      "PROMPT_GENERATION_STATE_MACHINE_ARN",
-      stateMachineNameResources.promptGenerationStateMachine.stateMachineArn
+    stateMachineNameResources.promptGeneratorLambda.addEnvironment(
+      "APPSYNC_ENDPOINT",
+      appSyncResources.graphQlApi.graphqlUrl
+    );
+
+    stateMachineNameResources.promptGeneratorLambda.addEnvironment(
+      "APPSYNC_API_KEY",
+      appSyncResources.graphQlApi.apiKey!
+    );
+
+    stateMachineNameResources.promptGeneratorLambda.addEnvironment(
+      "ANTHROPIC_MODEL",
+      props.anthropicModel
+    );
+
+    stateMachineNameResources.promptGeneratorLambda.addEnvironment(
+      "BEDROCK_REGION",
+      props.bedrockRegion
     );
 
     const apiResources = new ApiResources(this, "ApiResources", {
       userPool: cognitoResources.userPool,
-      requestHandlerLambda: lambdaResources.requestHandlerLambda,
     });
+
+    stateMachineNameResources.promptGenerationStateMachine.grantStartExecution(
+      apiResources.requestHandlerLambda
+    );
+
+    apiResources.requestHandlerLambda.addEnvironment(
+      "PROMPT_GENERATION_STATE_MACHINE_ARN",
+      stateMachineNameResources.promptGenerationStateMachine.stateMachineArn
+    );
 
     const site = new Site(this, "Site", {
       graphQlUrl: appSyncResources.graphQlApi.graphqlUrl,

@@ -50,7 +50,7 @@ export class Site extends Construct {
     });
     const execOptions: ExecSyncOptions = { stdio: "inherit" };
 
-    const bundle = Source.asset("./frontend", {
+    const bundle = Source.asset("../frontend", {
       bundling: {
         command: [
           "sh",
@@ -67,10 +67,10 @@ export class Site extends Construct {
               return false;
             }
             execSync(
-              "cd frontend && yarn install --frozen-lockfile && yarn build",
+              "cd ../frontend && npm install && npm run build",
               execOptions
             );
-            fsExtra.copySync("./frontend/dist", outputDir);
+            fsExtra.copySync("../frontend/dist", outputDir);
             return true;
           },
         },

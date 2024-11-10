@@ -9,7 +9,7 @@ import {
   Container,
 } from "@cloudscape-design/components";
 import { Amplify } from "aws-amplify";
-import "@aws-amplify/ui-react/styles.css";
+// import "@aws-amplify/ui-react/styles.css";
 import { Authenticator } from "@aws-amplify/ui-react";
 import { GraphQL } from "./GraphQL";
 import { Prompt } from "./Definitions";
