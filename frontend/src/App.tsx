@@ -17,6 +17,7 @@ import { Generation } from "./Generation";
 import { generateClient } from "aws-amplify/api";
 import * as mutations from "./graphql/mutations";
 import { signOut } from "aws-amplify/auth";
+import "./styles/GlobalStyle.css";
 
 const client = generateClient();
 Amplify.configure(AmplifyConfig);
@@ -73,7 +74,10 @@ const App: React.FC = () => {
                   variant="h1"
                   actions={<Button onClick={handleSignOut}>Sign Out</Button>}
                 >
-                  Prompt Generator
+                  <div className="logo-container">
+                    <img src="./generator.svg" width="100px" height="100px" />
+                    <span>Prompt Generator</span>
+                  </div>
                 </Header>
               </SpaceBetween>
             }

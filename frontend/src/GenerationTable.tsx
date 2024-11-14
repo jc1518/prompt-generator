@@ -43,7 +43,7 @@ export const GenerationTable: React.FC<GenerationTableProps> = ({
       minWidth: 200,
       cell: (item: Prompt) => (
         <CenteredCell>
-          <ExpandableSection headerText="Task" expanded>
+          <ExpandableSection headerText="Task" defaultExpanded>
             <XMLComponent content={item.task} />
           </ExpandableSection>
         </CenteredCell>
