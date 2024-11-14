@@ -5,10 +5,7 @@ import {
   createHttpLink,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import {
-  BedrockRuntimeClient,
-  ContentBlock,
-} from "@aws-sdk/client-bedrock-runtime";
+import { ContentBlock } from "@aws-sdk/client-bedrock-runtime";
 import { converseWithModel } from "./bedrockConverse";
 import { promptTemplate } from "./prompt";
 import { typeDefs } from "./typeDefs";
@@ -98,10 +95,6 @@ export const lambdaHandler = async (event: any): Promise<void> => {
     }
     assistantPartial += "<Instructions Structure>";
     console.log(`AssistantPartial: \n${assistantPartial}`);
-
-    const bedrockClient = new BedrockRuntimeClient({
-      region: BEDROC_REGION,
-    });
 
     const response = await converseWithModel(BEDROC_REGION, ANTHROPIC_MODEL, [
       { role: "user", content: [{ text: updatedPrompt }] },
